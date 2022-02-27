@@ -55,11 +55,7 @@ public class MultiLanguageSystem {
     public void setActive(Locale locale) throws LanguageNotFoundException {
         configuration.setActive(locale);
         logger.debug("Set {} as the active language", locale.getLanguage());
-        logger.debug("Querying update of monitored Labels");
-        configuration.getRegistry().getMonitored().forEach((key, value) -> {
-            String updatedTranslation = translate(key);
-            value.update(updatedTranslation);
-        });
+        updateAll();
     }
 
     public String translate(String key) {
@@ -86,6 +82,30 @@ public class MultiLanguageSystem {
 
     public void register(String key, MonitoredLabel label) {
         configuration.register(key, label);
+        update(label);
+    }
+
+    public void updateAll() {
+        logger.debug("Querying update of monitored Labels");
+        configuration.getRegistry().getMonitored().forEach((key, value) -> {
+            String updatedTranslation = translate(key);
+            value.update(updatedTranslation);
+        });
+    }
+
+    public void update(String key) {
+        logger.debug("Updating label {}", key);
+        MonitoredLabel label = configuration.getRegistry().getMonitored().get(key);
+        update(label);
+    }
+
+    private void update(MonitoredLabel label) {
+        String translated = translate(label.getMlsKey());
+        label.update(translated);
+    }
+
+    public Path getMissingKeys() {
+        return missingKeys;
     }
 
 }

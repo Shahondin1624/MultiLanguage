@@ -6,18 +6,22 @@ plugins {
 }
 
 group 'com.github.Shahondin1624'
-version '1.0-SNAPSHOT'
+version '1.0'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven {
+        name 'nexus'
+        url "http://shahondin1624.ddns.net:8081/repository/maven-releases/"
+        allowInsecureProtocol true
+    }
 }
 
 dependencies {
-    api group: 'com.github.Shahondin1624', name: 'EventCommunications', version: '1.0-SNAPSHOT'
-    implementation 'org.slf4j:slf4j-api:1.7.32'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    api group: 'com.github.Shahondin1624', name: 'EventCommunications', version: '1.0'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 distributions {
@@ -43,6 +47,26 @@ publishing {
     }
 }
 
+jar {
+    archiveBaseName.set(rootProject.name)
+    archiveVersion.set(version)
+    archiveClassifier.set('')
+    manifest {
+        attributes 'description' : rootProject.name + " JAR"
+    }
+}
+
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact("build/libs/" + rootProject.name + "-" + version + ".jar") {
+                extension 'jar'
+            }
+            javadoc
+        }
+    }
 }

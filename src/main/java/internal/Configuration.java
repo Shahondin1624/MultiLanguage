@@ -11,10 +11,11 @@ public class Configuration {
     private final MultiLanguageListenerRegistry registry = new MultiLanguageListenerRegistry();
 
     protected Configuration(Locale... locales) {
-        languages.addAll(List.of(locales));
-        if (locales.length > 0) {
-            active = locales[0];
+        if (locales == null || locales.length < 1) {
+            throw new IllegalArgumentException("Must at least pass one language");
         }
+        languages.addAll(List.of(locales));
+        active = locales[0];
     }
 
     public Locale getActive() {
